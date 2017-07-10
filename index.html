@@ -8,8 +8,8 @@
 }
 
 .counties :hover {
-  fill: blue;
-  transition-duration: .5s;
+  fill: red;
+  transition-duration: .15s;
   transition-timing-function: ease-in-out;
 }
 
@@ -42,15 +42,13 @@ var path = d3.geoPath();
 
 
 
-var color = d3.scaleThreshold()
-    .domain(d3.range(0, 1000))
-    .range(d3.schemeBlues[0,9]);
-
-
 // var color = d3.scaleThreshold()
-//     .domain([0, 10, 20, 30, 100])
-//     .range(["#ffffff", "#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+//     .domain(d3.range(0, 800))
+//     .range(d3.schemeBlues[0,9]);
 
+var color = d3.scaleThreshold()
+    .domain([0, 1, 5, 10, 50, 100, 800])
+    .range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
 
 
 // d3.json("https://d3js.org/us-10m.v1.json", function(error, us) {
@@ -84,17 +82,17 @@ function ready(error, us) {
   if (error) throw error;
 
   svg.append("g")
-      .attr("class", "counties")
+    .attr("class", "counties")
     .selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("fill", function(d) { return color(d.count = map.get(d.id)); })
-      .attr("d", path)
+    .attr("fill", function(d) { return color(d.count = map.get(d.id)); })
+    .attr("d", path)
     .append("title")
-      .text(function(d) { return d.count; });
+    .text(function(d) { return d.count; });
 
   svg.append("path")
-      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a.id !== b.id; }))
       .attr("class", "states")
       .attr("d", path);
 }
