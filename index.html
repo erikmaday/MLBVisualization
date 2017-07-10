@@ -77,7 +77,7 @@ var color = d3.scaleThreshold()
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-    .defer(d3.csv, "data/CountyTotals2.csv", function(d) { map.set(d.id, +d.count); })
+    .defer(d3.csv, "data/CountyTotals.csv", function(d) { map.set(d.id, +d.count); })
     .await(ready);
 
 function ready(error, us) {
