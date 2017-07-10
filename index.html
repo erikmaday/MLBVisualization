@@ -4,7 +4,7 @@
 </head>
 <style>
 .counties {
-	fill: #c4c4c4;
+	fill: none;
 }
 
 .counties :hover {
@@ -14,36 +14,88 @@
 }
 
 .county-borders {
-  fill: none;
-  stroke: #fff;
+  stroke: #black;
   stroke-width: 0.25px;
   stroke-linejoin: round;
   stroke-linecap: round;
   pointer-events: none;
 }
 
+.states {
+  fill: none;
+  stroke: #000;
+  stroke-linejoin: round;
+}
+
 </style>
 <svg width="1920" height="1080"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/topojson.v2.min.js"></script>
 <script>
 
 var svg = d3.select("svg");
 
+var map = d3.map();
+
 var path = d3.geoPath();
 
-d3.json("https://d3js.org/us-10m.v1.json", function(error, us) {
-	if (error) throw error;
 
-	svg.append("g")
-    	.attr("class", "counties")
-    	.selectAll("path")
-    	.data(topojson.feature(us, us.objects.counties).features)
-    	.enter().append("path")
-    	.attr("d", path);
 
- 	svg.append("path")
-    	.attr("class", "county-borders")
-    	.attr("d", path(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; })));
-});
+var color = d3.scaleThreshold()
+    .domain(d3.range(0, 1000))
+    .range(d3.schemeBlues[0,9]);
+
+
+// var color = d3.scaleThreshold()
+//     .domain([0, 10, 20, 30, 100])
+//     .range(["#ffffff", "#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+
+
+
+// d3.json("https://d3js.org/us-10m.v1.json", function(error, us) {
+// 	if (error) throw error;
+
+// 	svg.append("g")
+//     	.attr("class", "counties")
+//     	.selectAll("path")
+//     	.data(topojson.feature(us, us.objects.counties).features)
+//     	.enter().append("path")
+//     	.attr("d", path);
+
+//  	svg.append("path")
+//     	.attr("class", "county-borders")
+//     	.attr("d", path(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; })));
+
+//   var counties = topojson.feature(us, us.objects.counties).features;
+
+//   var densities = counties
+//       .map(function(d) { return d.properties.density = d.properties.pop / path.area(d); })
+//       .sort(function(a, b) { return a - b; });
+
+// });
+
+d3.queue()
+    .defer(d3.json, "https://d3js.org/us-10m.v1.json")
+    .defer(d3.csv, "data/CountyTotals2.csv", function(d) { map.set(d.id, +d.count); })
+    .await(ready);
+
+function ready(error, us) {
+  if (error) throw error;
+
+  svg.append("g")
+      .attr("class", "counties")
+    .selectAll("path")
+    .data(topojson.feature(us, us.objects.counties).features)
+    .enter().append("path")
+      .attr("fill", function(d) { return color(d.count = map.get(d.id)); })
+      .attr("d", path)
+    .append("title")
+      .text(function(d) { return d.count; });
+
+  svg.append("path")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("class", "states")
+      .attr("d", path);
+}
 </script>
