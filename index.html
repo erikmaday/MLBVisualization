@@ -42,38 +42,9 @@ var map2 = d3.map();
 var path = d3.geoPath();
 
 
-
-// var color = d3.scaleThreshold()
-//     .domain(d3.range(0, 800))
-//     .range(d3.schemeBlues[0,9]);
-
 var color = d3.scaleThreshold()
     .domain([1, 5, 10, 50, 100, 200])
-    //.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
     .range(["#fafafa", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"])
-
-
-// d3.json("https://d3js.org/us-10m.v1.json", function(error, us) {
-//  if (error) throw error;
-
-//  svg.append("g")
-//      .attr("class", "counties")
-//      .selectAll("path")
-//      .data(topojson.feature(us, us.objects.counties).features)
-//      .enter().append("path")
-//      .attr("d", path);
-
-//    svg.append("path")
-//      .attr("class", "county-borders")
-//      .attr("d", path(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; })));
-
-//   var counties = topojson.feature(us, us.objects.counties).features;
-
-//   var densities = counties
-//       .map(function(d) { return d.properties.density = d.properties.pop / path.area(d); })
-//       .sort(function(a, b) { return a - b; });
-
-// });
 
 d3.queue()
     .defer(d3.json, "https://d3js.org/us-10m.v1.json")
